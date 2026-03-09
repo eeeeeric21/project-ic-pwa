@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4A90D9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Aescul Helper</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen">
+            <div class="login-container">
+                <div class="logo">🏥</div>
+                <h1>Aescul Helper</h1>
+                <p class="tagline">Your AI Health Companion</p>
+                
+                <div class="login-tabs">
+                    <button class="tab-btn active" data-role="patient">Patient</button>
+                    <button class="tab-btn" data-role="caregiver">Caregiver</button>
+                </div>
+                
+                <div id="patient-login" class="login-form">
+                    <input type="text" id="patient-id" placeholder="Enter your name" class="input-large">
+                    <button id="login-btn" class="btn-primary btn-large">Start Check-in</button>
+                </div>
+                
+                <div id="caregiver-login" class="login-form hidden">
+                    <input type="text" id="caregiver-id" placeholder="Caregiver ID" class="input-large">
+                    <input type="password" id="caregiver-pin" placeholder="PIN" class="input-large">
+                    <button id="caregiver-login-btn" class="btn-primary btn-large">View Dashboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Check-in Screen -->
+        <div id="checkin-screen" class="screen hidden">
+            <header class="header">
+                <button id="back-btn" class="btn-icon">←</button>
+                <h2>Hello, <span id="patient-name">Friend</span> 👋</h2>
+                <div id="risk-indicator" class="risk-badge green">🟢</div>
+            </header>
+            
+            <div class="chat-container" id="chat-container">
+                <div class="welcome-message">
+                    <p>I'm here to check in on you. Tap the microphone and tell me how you're feeling today.</p>
+                </div>
+            </div>
+            
+            <div class="voice-section">
+                <div id="status-text">Tap to speak</div>
+                <button id="voice-btn" class="voice-button">
+                    <div class="mic-icon">🎤</div>
+                    <div class="pulse-ring"></div>
+                </button>
+                <div id="transcript" class="transcript"></div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="quick-btn" data-msg="I'm feeling good today">😊 Good</button>
+                <button class="quick-btn" data-msg="I have some pain">😣 Pain</button>
+                <button class="quick-btn" data-msg="I feel lonely">😔 Lonely</button>
+                <button class="quick-btn" data-msg="I need help">🆘 Help</button>
+            </div>
+        </div>
+
+        <!-- Caregiver Dashboard -->
+        <div id="dashboard-screen" class="screen hidden">
+            <header class="header">
+                <button id="dashboard-back-btn" class="btn-icon">←</button>
+                <h2>Caregiver Dashboard</h2>
+            </header>
+            
+            <div class="dashboard-content">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-patients">2</div>
+                        <div class="stat-label">Patients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-checkins">14</div>
+                        <div class="stat-label">Check-ins Today</div>
+                    </div>
+                    <div class="stat-card alert">
+                        <div class="stat-value" id="stat-alerts">0</div>
+                        <div class="stat-label">Alerts</div>
+                    </div>
+                </div>
+                
+                <h3>Patient Status</h3>
+                <div id="patient-list" class="patient-list">
+                    <!-- Populated dynamically -->
+                </div>
+                
+                <h3>Recent Alerts</h3>
+                <div id="alert-list" class="alert-list">
+                    <p class="empty-state">No alerts 🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Summary Modal -->
+        <div id="summary-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>📋 Check-in Complete</h2>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <span class="label">Risk Level</span>
+                        <span class="value" id="summary-risk">🟢 GREEN</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Score</span>
+                        <span class="value" id="summary-score">10/100</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Signals</span>
+                        <span class="value" id="summary-signals">None</span>
+                    </div>
+                </div>
+                <p id="summary-message">Thank you for checking in! Take care! 💙</p>
+                <button id="summary-close" class="btn-primary">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

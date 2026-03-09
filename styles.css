@@ -1,0 +1,561 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4A90D9;
+    --primary-dark: #3A7BC8;
+    --success: #27AE60;
+    --warning: #F39C12;
+    --danger: #E74C3C;
+    --text: #2C3E50;
+    --text-light: #7F8C8D;
+    --bg: #F8F9FA;
+    --white: #FFFFFF;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    --radius: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--white);
+    position: relative;
+}
+
+.screen {
+    min-height: 100vh;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Login Screen */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 80px;
+    margin-bottom: 16px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.tagline {
+    color: var(--text-light);
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+.login-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--primary);
+    background: var(--white);
+    color: var(--primary);
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.login-form {
+    width: 100%;
+}
+
+.input-large {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    border: 2px solid #E0E0E0;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-large:focus {
+    border-color: var(--primary);
+}
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-large {
+    padding: 20px 32px;
+    font-size: 20px;
+}
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--white);
+    border-bottom: 1px solid #E0E0E0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h2 {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.risk-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.risk-badge.green { background: #E8F5E9; color: var(--success); }
+.risk-badge.yellow { background: #FFF8E1; color: var(--warning); }
+.risk-badge.red { background: #FFEBEE; color: var(--danger); }
+
+/* Chat Container */
+.chat-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 380px);
+}
+
+.welcome-message {
+    background: #E3F2FD;
+    padding: 20px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.message {
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-user {
+    text-align: right;
+}
+
+.message-user .bubble {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.message-ai .bubble {
+    background: #F0F0F0;
+    color: var(--text);
+}
+
+.bubble {
+    display: inline-block;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+.message-time {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+/* Voice Section */
+.voice-section {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #E0E0E0;
+    background: var(--white);
+}
+
+#status-text {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+.voice-button {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
+    font-size: 40px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(74, 144, 217, 0.4);
+}
+
+.voice-button:hover {
+    transform: scale(1.05);
+}
+
+.voice-button:active {
+    transform: scale(0.95);
+}
+
+.voice-button.listening {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(74, 144, 217, 0.4); }
+    50% { box-shadow: 0 0 0 20px rgba(74, 144, 217, 0); }
+}
+
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+    opacity: 0;
+}
+
+.voice-button.listening .pulse-ring {
+    animation: ring 1.5s infinite;
+}
+
+@keyframes ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.transcript {
+    margin-top: 16px;
+    font-size: 18px;
+    color: var(--text);
+    min-height: 24px;
+    font-weight: 500;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.quick-btn {
+    flex-shrink: 0;
+    padding: 12px 20px;
+    background: var(--white);
+    border: 2px solid #E0E0E0;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.quick-btn:active {
+    background: #F0F0F0;
+}
+
+/* Dashboard */
+.dashboard-content {
+    padding: 20px;
+}
+
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--white);
+    border: 1px solid #E0E0E0;
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+}
+
+.stat-card.alert {
+    border-color: var(--danger);
+    background: #FFEBEE;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.stat-card.alert .stat-value {
+    color: var(--danger);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.patient-list, .alert-list {
+    margin-bottom: 24px;
+}
+
+.patient-card {
+    background: var(--white);
+    border: 1px solid #E0E0E0;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.patient-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.patient-info {
+    flex: 1;
+}
+
+.patient-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.patient-status {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.patient-risk {
+    font-size: 24px;
+}
+
+.alert-card {
+    background: #FFEBEE;
+    border-left: 4px solid var(--danger);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.alert-title {
+    font-weight: 600;
+    color: var(--danger);
+    margin-bottom: 4px;
+}
+
+.alert-detail {
+    font-size: 14px;
+    color: var(--text);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-light);
+    padding: 24px;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-bottom: 24px;
+}
+
+.summary-stats {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item .label {
+    color: var(--text-light);
+}
+
+.summary-item .value {
+    font-weight: 600;
+}
+
+#summary-message {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 24px;
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #F0F0F0;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: var(--text-light);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-8px); }
+}
+
+/* Loading */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--white);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
