@@ -5,11 +5,17 @@ class AesculHelper {
         this.apiKey = 'Liu-NHhjTaune12IV090NU8qTNSsaAJwBjx5';
         this.model = 'MERaLiON/MERaLiON-3-10B';
         
+        // Supabase config
+        this.supabaseUrl = 'https://xhonxrvogiamqhpfouoh.supabase.co';
+        this.supabaseKey = 'sb_publishable_1XmCjaQQhz0zSsIpq3k6IQ_v9u9EYe7';
+        this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
+        
         this.currentPatient = null;
         this.conversationHistory = [];
         this.riskScore = 0;
         this.signals = [];
         this.isListening = false;
+        this.sessionId = null;
         
         this.init();
     }
@@ -66,7 +72,7 @@ class AesculHelper {
         document.getElementById(`${screenId}-screen`).classList.remove('hidden');
     }
     
-    patientLogin() {
+    async patientLogin() {
         const name = document.getElementById('patient-id').value.trim();
         if (!name) {
             alert('Please enter your name');
@@ -74,7 +80,7 @@ class AesculHelper {
         }
         
         this.currentPatient = {
-            id: 'patient-' + Date.now(),
+            id: 'pwa-' + Date.now(),
             name: name,
             preferred_name: name
         };
@@ -82,6 +88,9 @@ class AesculHelper {
         document.getElementById('patient-name').textContent = name;
         this.showScreen('checkin');
         this.speak(`Hello ${name}! I'm here to check in on you. How are you feeling today?`);
+        
+        // Create check-in session in database
+        await this.createCheckinSession();
     }
     
     caregiverLogin() {
@@ -195,6 +204,9 @@ class AesculHelper {
         // Store in history
         this.conversationHistory.push({ role: 'user', content: message });
         
+        // Save message to database
+        await this.saveMessage('user', message, analysis);
+        
         // Show typing indicator
         this.showTypingIndicator();
         
@@ -205,12 +217,26 @@ class AesculHelper {
             this.addMessageToChat('ai', response);
             this.speak(response);
             this.conversationHistory.push({ role: 'assistant', content: response });
+            
+            // Save AI response to database
+            await this.saveMessage('assistant', response, { signals: [], riskScore: 0 });
+            
+            // Update check-in with new risk score
+            await this.updateCheckinRisk();
+            
+            // Check if alert needed
+            if (this.riskScore >= 30) {
+                await this.triggerAlert();
+            }
         } catch (error) {
             console.error('AI response error:', error);
             this.hideTypingIndicator();
             const fallback = this.getFallbackResponse(analysis);
             this.addMessageToChat('ai', fallback);
             this.speak(fallback);
+            
+            // Save fallback response
+            await this.saveMessage('assistant', fallback, { signals: [], riskScore: 0 });
         }
     }
     
@@ -367,6 +393,130 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
     
     showAlertNotification() {
         this.addMessageToChat('ai', "🙏 I'm a bit concerned. I'll make sure someone checks in on you.");
+    }
+    
+    // ========== Database Methods ==========
+    
+    async createCheckinSession() {
+        try {
+            // First, create or get patient
+            let patientId = this.currentPatient.id;
+            
+            // Check if patient exists
+            const { data: existingPatient } = await this.supabase
+                .from('patients')
+                .select('id')
+                .eq('name', this.currentPatient.name)
+                .single();
+            
+            if (existingPatient) {
+                patientId = existingPatient.id;
+            } else {
+                // Create new patient
+                const { data: newPatient, error } = await this.supabase
+                    .from('patients')
+                    .insert({
+                        name: this.currentPatient.name,
+                        preferred_name: this.currentPatient.preferred_name,
+                        source: 'pwa'
+                    })
+                    .select()
+                    .single();
+                
+                if (!error && newPatient) {
+                    patientId = newPatient.id;
+                    this.currentPatient.id = patientId;
+                }
+            }
+            
+            // Create check-in session
+            const { data: checkin, error } = await this.supabase
+                .from('checkins')
+                .insert({
+                    patient_id: patientId,
+                    checkin_type: 'ad-hoc',
+                    risk_score: 0,
+                    signals: [],
+                    status: 'in_progress',
+                    source: 'pwa'
+                })
+                .select()
+                .single();
+            
+            if (!error && checkin) {
+                this.sessionId = checkin.id;
+                console.log('Check-in session created:', this.sessionId);
+            }
+        } catch (error) {
+            console.error('Error creating check-in session:', error);
+        }
+    }
+    
+    async saveMessage(role, content, analysis) {
+        if (!this.sessionId) return;
+        
+        try {
+            await this.supabase
+                .from('messages')
+                .insert({
+                    checkin_id: this.sessionId,
+                    role: role,
+                    content: content,
+                    signals: analysis.signals || [],
+                    risk_score: analysis.riskScore || 0
+                });
+        } catch (error) {
+            console.error('Error saving message:', error);
+        }
+    }
+    
+    async updateCheckinRisk() {
+        if (!this.sessionId) return;
+        
+        try {
+            const riskLevel = this.riskScore >= 50 ? 'red' : 
+                             this.riskScore >= 30 ? 'orange' : 
+                             this.riskScore >= 15 ? 'yellow' : 'green';
+            
+            await this.supabase
+                .from('checkins')
+                .update({
+                    risk_score: this.riskScore,
+                    signals: [...new Set(this.signals)],
+                    risk_level: riskLevel
+                })
+                .eq('id', this.sessionId);
+        } catch (error) {
+            console.error('Error updating check-in:', error);
+        }
+    }
+    
+    async triggerAlert() {
+        if (!this.sessionId || !this.currentPatient) return;
+        
+        try {
+            const riskLevel = this.riskScore >= 50 ? 'RED' : 'ORANGE';
+            
+            // Create alert
+            await this.supabase
+                .from('alerts')
+                .insert({
+                    patient_id: this.currentPatient.id,
+                    checkin_id: this.sessionId,
+                    alert_type: 'high_risk',
+                    severity: riskLevel,
+                    message: `Risk score: ${this.riskScore}. Signals: ${[...new Set(this.signals)].join(', ')}`,
+                    status: 'pending',
+                    source: 'pwa'
+                });
+            
+            console.log('Alert triggered:', riskLevel);
+            
+            // Show user notification
+            this.addMessageToChat('ai', "🙏 I'm concerned about what you've shared. I'll make sure someone checks in on you.");
+        } catch (error) {
+            console.error('Error triggering alert:', error);
+        }
     }
     
     // Dashboard
