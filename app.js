@@ -417,8 +417,7 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
                     .from('patients')
                     .insert({
                         name: this.currentPatient.name,
-                        preferred_name: this.currentPatient.preferred_name,
-                        source: 'pwa'
+                        preferred_name: this.currentPatient.preferred_name
                     })
                     .select()
                     .single();
