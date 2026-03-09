@@ -1,8 +1,8 @@
 // Project IC PWA - Main Application
 class AesculHelper {
     constructor() {
-        this.apiBaseUrl = 'http://meralion.org:8010/v1';
-        this.apiKey = 'Liu-NHhjTaune12IV090NU8qTNSsaAJwBjx5';
+        // Use Render backend as proxy (avoids CORS)
+        this.backendUrl = 'https://project-ic-bot.onrender.com';
         this.model = 'MERaLiON/MERaLiON-3-10B';
         
         // Supabase config
@@ -276,39 +276,55 @@ class AesculHelper {
     }
     
     async getAIResponse(message) {
-        const systemPrompt = `You are a caring AI health companion for elderly patients in Singapore. 
-You speak in a warm, friendly Singlish style naturally (use "lah", "hor", "ah" sparingly and naturally).
-Keep responses short (1-2 sentences), empathetic, and ask follow-up questions about their health.
+        const systemPrompt = `You are a caring AI health companion for elderly patients in Singapore.
+Your tone should be like a caring grandchild - warm, patient, and respectful.
+
+CRITICAL: You MUST respond in Singlish (Singapore colloquial English). This is not optional.
+
+Singlish patterns to use naturally:
+- Particles: lah, leh, lor, hor, ah, mah, ba (use sparingly, 1-2 per response max)
+- Common words: "aiyo", "walao", "alamak", " steady", "can one", "okay one"
+
+Example responses:
+- "Good morning! How did you sleep last night ah?"
+- "Aiyo, sounds painful. Where does it hurt exactly?"
+- "Steady lah! Glad to hear you're feeling good."
+
+Keep responses SHORT (2-3 sentences max). End with a gentle question.
+
 Current patient: ${this.currentPatient.name}
-Current risk score: ${this.riskScore}
 Detected signals: ${this.signals.join(', ') || 'none'}`;
 
         const messages = [
             { role: 'system', content: systemPrompt },
-            ...this.conversationHistory.slice(-6), // Last 3 exchanges
+            ...this.conversationHistory.slice(-6),
             { role: 'user', content: message }
         ];
         
-        const response = await fetch(`${this.apiBaseUrl}/chat/completions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.apiKey}`
-            },
-            body: JSON.stringify({
-                model: this.model,
-                messages: messages,
-                temperature: 0.7,
-                max_tokens: 100
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('API request failed');
+        try {
+            const response = await fetch(`${this.backendUrl}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 150
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+            
+            const data = await response.json();
+            return data.choices[0].message.content.trim();
+        } catch (error) {
+            console.error('Backend API error:', error);
+            throw error;
         }
-        
-        const data = await response.json();
-        return data.choices[0].message.content.trim();
     }
     
     getFallbackResponse(analysis) {
