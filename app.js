@@ -434,11 +434,10 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
                 .from('checkins')
                 .insert({
                     patient_id: patientId,
-                    checkin_type: 'ad-hoc',
+                    session_type: 'ad-hoc',
                     risk_score: 0,
-                    signals: [],
-                    status: 'in_progress',
-                    source: 'pwa'
+                    detected_categories: [],
+                    risk_level: 'GREEN'
                 })
                 .select()
                 .single();
@@ -460,10 +459,13 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
                 .from('messages')
                 .insert({
                     checkin_id: this.sessionId,
+                    patient_id: this.currentPatient.id,
                     role: role,
                     content: content,
-                    signals: analysis.signals || [],
-                    risk_score: analysis.riskScore || 0
+                    detected_signals: {
+                        categories: analysis.signals || [],
+                        risk_score: analysis.riskScore || 0
+                    }
                 });
         } catch (error) {
             console.error('Error saving message:', error);
@@ -474,15 +476,15 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
         if (!this.sessionId) return;
         
         try {
-            const riskLevel = this.riskScore >= 50 ? 'red' : 
-                             this.riskScore >= 30 ? 'orange' : 
-                             this.riskScore >= 15 ? 'yellow' : 'green';
+            const riskLevel = this.riskScore >= 50 ? 'RED' : 
+                             this.riskScore >= 30 ? 'ORANGE' : 
+                             this.riskScore >= 15 ? 'YELLOW' : 'GREEN';
             
             await this.supabase
                 .from('checkins')
                 .update({
                     risk_score: this.riskScore,
-                    signals: [...new Set(this.signals)],
+                    detected_categories: [...new Set(this.signals)],
                     risk_level: riskLevel
                 })
                 .eq('id', this.sessionId);
@@ -503,11 +505,10 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
                 .insert({
                     patient_id: this.currentPatient.id,
                     checkin_id: this.sessionId,
-                    alert_type: 'high_risk',
-                    severity: riskLevel,
+                    alert_level: riskLevel,
+                    title: 'High Risk Detected',
                     message: `Risk score: ${this.riskScore}. Signals: ${[...new Set(this.signals)].join(', ')}`,
-                    status: 'pending',
-                    source: 'pwa'
+                    detected_issues: [...new Set(this.signals)]
                 });
             
             console.log('Alert triggered:', riskLevel);
