@@ -313,11 +313,40 @@ Detected signals: ${this.signals.join(', ') || 'none'}`;
     
     getFallbackResponse(analysis) {
         const responses = {
-            pain: ["I understand you're in pain, lah. Where does it hurt?", "Sorry to hear that ah. Is it very painful?"],
-            distress: ["I hear you. It's okay to feel this way sometimes.", "You're not alone. Tell me more about how you're feeling."],
-            cognitive: ["Don't worry, sometimes we all forget things. What were you trying to remember?", "That's normal, hor. Take your time."],
-            red_flag: ["This sounds serious! Please stay calm. I'm alerting your caregiver now."],
-            default: ["I see. Tell me more about that.", "How are you feeling overall today?", "Good to know! Anything else you want to share?"]
+            pain: [
+                "Aiyo, sorry to hear got pain ah. Where exactly does it hurt?",
+                "Wah, painful sia. Is it the usual pain or worse today?",
+                "Pain again? Tell uncle/aunty where not comfortable, I listen.",
+                "Sorry to hear that. On a scale of 1-10, how painful is it?",
+                "Aiyo, must take care okay. Have you taken any medicine for the pain?"
+            ],
+            distress: [
+                "I can feel something's troubling you. Want to share more? I'm here.",
+                "Aiyah, sounds tough. Don't keep it inside, tell me more okay?",
+                "I understand. It's okay to feel this way sometimes. You're not alone.",
+                "Take your time. I'm here to listen whenever you're ready.",
+                "That sounds hard. Do you want to talk about what's bothering you?"
+            ],
+            cognitive: [
+                "Nevermind lah, take your time. Sometimes we all forget things.",
+                "No rush ah. What were you trying to remember?",
+                "It's okay one, happens to everyone. Don't worry too much hor.",
+                "Take a breath. Maybe it will come back to you later.",
+                "No problem, we can figure it out together."
+            ],
+            red_flag: [
+                "This sounds serious! Please stay calm. I'm alerting your caregiver now.",
+                "Oh no! Please sit down and rest. Help is on the way."
+            ],
+            default: [
+                "I see. Tell me more about that lah.",
+                "How are you feeling overall today?",
+                "Good to know! Anything else you want to share?",
+                "I understand. What else is on your mind?",
+                "Okay, tell me more about your day so far.",
+                "That's interesting! How does that make you feel?",
+                "I hear you. Is there anything else bothering you today?"
+            ]
         };
         
         const category = analysis.signals[0] || 'default';
