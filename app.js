@@ -7,7 +7,7 @@ class AesculHelper {
         
         // Supabase config
         this.supabaseUrl = 'https://xhonxrvogiamqhpfouoh.supabase.co';
-        this.supabaseKey = 'sb_publishable_1XmCjaQQhz0zSsIpq3k6IQ_v9u9EYe7';
+        this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhob254cnZvZ2lhbXFocGZvdW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MzYzOTgsImV4cCI6MjA4ODUxMjM5OH0.MpAHAJbkchSv-27ie-0fUrVxjWdg9lOvpLHa_pyIIu4';
         this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
         
         this.currentPatient = null;
